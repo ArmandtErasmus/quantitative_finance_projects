@@ -44,5 +44,5 @@ Suggestions and issue reports are appreciated as well.
 # 📬 Contact / Questions
 
 Feel free to open an issue or reach out if you have ideas or questions.
-More projects will be added over time — stay tuned!
+More projects will be added over time - stay tuned!
 
