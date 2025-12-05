@@ -41,7 +41,7 @@ If you'd like to add a model, fix something, or improve documentation:
 
 Suggestions and issue reports are appreciated as well.
 
-#📬 Contact / Questions
+# 📬 Contact / Questions
 
 Feel free to open an issue or reach out if you have ideas or questions.
 More projects will be added over time — stay tuned!
