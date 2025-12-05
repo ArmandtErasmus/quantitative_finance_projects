@@ -1,12 +1,12 @@
 # 📊 Quantitative Finance Projects
 
-Welcome to Quantitative Finance Projects — a collection of finance, math, and data-driven models covering derivatives pricing, risk management, portfolio optimisation, stochastic processes, and more.
+Welcome to Quantitative Finance Projects: a collection of finance, math, and data-driven models covering derivatives pricing, risk management, portfolio optimisation, stochastic processes, and more.
 
 This repository is designed to help students, quants, actuaries, and finance enthusiasts explore practical implementations of key concepts in quantitative finance. Each project is structured, clearly documented, and written with a focus on both mathematical correctness and clean code.
 
 # 📌 What You’ll Find Here
 - 🧮 Derivative Pricing Models
-Binomial trees, Black–Scholes, Monte Carlo simulation, Greeks, implied volatility.
+Binomial trees, Black-Scholes, Monte Carlo simulation, Greeks, implied volatility.
 
 - 📈 Portfolio Theory & Risk Management
 Mean-variance optimisation, efficient frontier, risk-parity, backtesting, VaR/ES.
@@ -30,7 +30,7 @@ If you find this repository useful, please consider giving it a star!
 
 It helps others discover the project and motivates further development.
 
-👉 Click the ⭐ button at the top of the page — it really helps!
+👉 Click the ⭐ button at the top of the page - it really helps!
 
 # 🤝 Contributing
 Contributions are welcome!
