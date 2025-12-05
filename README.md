@@ -32,7 +32,7 @@ It helps others discover the project and motivates further development.
 
 👉 Click the ⭐ button at the top of the page — it really helps!
 
-#🤝 Contributing
+# 🤝 Contributing
 Contributions are welcome!
 If you'd like to add a model, fix something, or improve documentation:
 1. Fork the repo
