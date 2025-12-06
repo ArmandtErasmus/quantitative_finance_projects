@@ -1,5 +1,10 @@
 # 📘 One-Period Binomial Option Pricing Model
 
+**Interactive Dashboard**
+[Interactive Dashboard](https://oneperiodbinomialpricing.streamlit.app/)
+
+---
+
 A Python implementation with pricing, Greeks, arbitrage checks, and visualisations.
 
 This repository contains a complete and well-structured implementation of the One-Period Binomial Model for pricing European call and put options. It includes:
