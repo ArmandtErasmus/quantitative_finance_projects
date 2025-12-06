@@ -130,128 +130,171 @@ class BinomialVisualizer:
         self.K = K
         self.r = r
 
-    def plot_price_surface(self,
-                           u_range=(1.0, 1.4),
-                           d_range=(0.6, 1.0),
-                           resolution=40):
-        u_vals = np.linspace(u_range[0], u_range[1], resolution)
-        d_vals = np.linspace(d_range[0], d_range[1], resolution)
-
-        U, D = np.meshgrid(u_vals, d_vals)
-        prices = np.zeros_like(U)
-
-        for i in range(resolution):
-            for j in range(resolution):
-                if D[i, j] < U[i, j]:      # only valid region
-                    pricer = OnePeriodBinomialPricer(
-                        S0=self.S0, K=self.K,
-                        u=U[i, j], d=D[i, j], r=self.r, validate=False
-                    )
-                    prices[i, j] = pricer.price_call().price
-                else:
-                    prices[i, j] = np.nan
-
-        fig = plt.figure(figsize=(10, 6))
-        ax = fig.add_subplot(111, projection='3d')
-        surf = ax.plot_surface(U, D, prices,
-                               cmap=cm.viridis,
-                               linewidth=0,
-                               antialiased=True)
-
-        ax.set_title("Call Price Surface as Function of u and d")
-        ax.set_xlabel("u (Up Factor)")
-        ax.set_ylabel("d (Down Factor)")
-        ax.set_zlabel("Call Price")
-        fig.colorbar(surf)
-        plt.show()
-
     def plot_delta_vs_strike(self,
                              K_min=50,
                              K_max=150,
                              num=100,
                              u=1.1,
                              d=0.9):
+
         strikes = np.linspace(K_min, K_max, num)
         deltas = np.zeros_like(strikes)
 
         for i, K in enumerate(strikes):
             pricer = OnePeriodBinomialPricer(
-                S0=self.S0, K=K,
-                u=u, d=d, r=self.r, validate=False
+                S0=self.S0, K=K, u=u, d=d, r=self.r, validate=False
             )
             deltas[i] = pricer.price_call().delta
 
-        plt.figure(figsize=(8, 5))
-        plt.plot(strikes, deltas)
-        plt.axvline(self.S0, color="grey", linestyle="--", label="ATM (S0)")
-        plt.title("Delta Sensitivity to Strike K")
-        plt.xlabel("Strike K")
-        plt.ylabel("Delta")
-        plt.grid(True)
-        plt.legend()
-        plt.show()
+        fig = go.Figure()
+        # Delta line
+        fig.add_trace(go.Scatter(
+            x=strikes,
+            y=deltas,
+            mode="lines",
+            line=dict(width=2),
+            name="Delta"
+        ))
 
-    def plot_price_surface_interactive(self,
-                                   u_range=(1.0, 1.4),
-                                   d_range=(0.6, 1.0),
-                                   resolution=40):
+        # ATM vertical line
+        fig.add_trace(go.Scatter(
+            x=[self.S0, self.S0],
+            y=[min(deltas), max(deltas)],
+            mode="lines",
+            line=dict(dash="dash"),
+            name="ATM (S0)"
+        ))
+
+        fig.update_layout(
+            title="Delta Sensitivity to Strike K",
+            xaxis_title="Strike K",
+            yaxis_title="Delta",
+            template="plotly_white",
+            height=400,
+            margin=dict(l=40, r=40, t=60, b=40)
+        )
+        return fig
+
+    def plot_price_surface_interactive(self, u_range=(1.0, 1.4), d_range=(0.6, 1.0), resolution=40):
 
         u_vals = np.linspace(u_range[0], u_range[1], resolution)
         d_vals = np.linspace(d_range[0], d_range[1], resolution)
-
         U, D = np.meshgrid(u_vals, d_vals)
         Z = np.zeros_like(U)
 
         for i in range(resolution):
             for j in range(resolution):
                 if D[i, j] < np.exp(self.r) < U[i, j]:
-                    try:
-                        pricer = OnePeriodBinomialPricer(self.S0, self.K, U[i,j], D[i,j], self.r)
-                        Z[i,j] = pricer.price_call().price
-                    except:
-                        Z[i,j] = np.nan
+                    pricer = OnePeriodBinomialPricer(
+                        self.S0, self.K, U[i, j], D[i, j], self.r
+                    )
+                    Z[i, j] = pricer.price_call().price
                 else:
-                    Z[i,j] = np.nan
+                    Z[i, j] = float('nan')
 
-        fig = go.Figure(data=[go.Surface(z=Z, x=U, y=D, colorscale="Viridis")])
+        fig = go.Figure(
+            data=[
+                go.Surface(
+                    z=Z,
+                    x=U,
+                    y=D,
+                    colorscale="Viridis"
+                )
+            ]
+        )
+
         fig.update_layout(
-            title="Interactive Call Price Surface",
+            title="Call Price Surface",
             scene=dict(
-                xaxis_title="u (Up Factor)",
-                yaxis_title="d (Down Factor)",
-                zaxis_title="Call Price"
+                xaxis_title="u",
+                yaxis_title="d",
+                zaxis_title="Price",
             ),
             height=600,
         )
-        fig.show()
+
+        return fig
 
     def plot_arbitrage_region(self,
-                              u_range=(1.0, 1.4),
-                              d_range=(0.6, 1.0),
-                              resolution=300):
+                          u_range=(1.0, 1.4),
+                          d_range=(0.6, 1.0),
+                          resolution=300):
+
         u_vals = np.linspace(u_range[0], u_range[1], resolution)
         d_vals = np.linspace(d_range[0], d_range[1], resolution)
-
         U, D = np.meshgrid(u_vals, d_vals)
 
-        # Arbitrage-free iff:   d < e^r < u
-        arbi_free = (D < np.exp(self.r)) & (np.exp(self.r) < U)
+        er = np.exp(self.r)
+        arbi_free = (D < er) & (er < U)
 
-        plt.figure(figsize=(8, 6))
-        plt.contourf(U, D, arbi_free, cmap="RdYlGn", alpha=0.8)
-        plt.colorbar(label="Arbitrage Free (1 = Yes, 0 = No)")
+        # Create hover text
+        hover_text = np.empty_like(U, dtype=object)
+        for i in range(resolution):
+            for j in range(resolution):
+                hover_text[i, j] = f"u: {U[i,j]:.3f}<br>d: {D[i,j]:.3f}<br>" + \
+                                ("Arbitrage Free ✅" if arbi_free[i,j] else "Arbitrage ❌")
 
-        # highlight boundary lines
-        plt.axhline(np.exp(self.r), color="black", linestyle="--",
-                    label="d = e^r boundary")
-        plt.axvline(np.exp(self.r), color="black", linestyle="--")
+        # Heatmap without legend entry
+        fig = go.Figure(data=go.Heatmap(
+            x=U[0, :],
+            y=D[:, 0],
+            z=arbi_free.astype(int),
+            colorscale="tropic",
+            colorbar=dict(title=" "),
+            showscale=False,
+            showlegend=False,
+            hoverinfo="text",
+            text=hover_text
+        ))
 
-        plt.title("Arbitrage Region in (u, d) Space")
-        plt.xlabel("u (Up Factor)")
-        plt.ylabel("d (Down Factor)")
-        plt.legend()
-        plt.grid(True)
-        plt.show()
+        # Horizontal boundary line (d = e^r)
+        fig.add_trace(go.Scatter(
+            x=[u_vals[0], u_vals[-1]],
+            y=[er, er],
+            mode="lines",
+            line=dict(color="black", dash="dash"),
+            showlegend=False
+        ))
+        fig.add_annotation(
+            x=u_vals[-1],
+            y=er,
+            text="d = e^r boundary",
+            showarrow=False,
+            xanchor="left",
+            yanchor="bottom",
+            font=dict(size=12, color="black")
+        )
+
+        # Vertical boundary line (u = e^r)
+        fig.add_trace(go.Scatter(
+            x=[er, er],
+            y=[d_range[0], d_range[1]],
+            mode="lines",
+            line=dict(color="black", dash="dash"),
+            showlegend=False
+        ))
+        fig.add_annotation(
+            x=er,
+            y=d_range[-1],
+            text="u = e^r boundary",
+            showarrow=False,
+            textangle=-90,
+            xanchor="left",
+            yanchor="top",
+            font=dict(size=12, color="black")
+        )
+
+        # Layout adjustments
+        fig.update_layout(
+            title="Arbitrage Region in (u, d) Space",
+            xaxis_title="u (Up Factor)",
+            yaxis_title="d (Down Factor)",
+            template="plotly_white",
+            height=500,
+            margin=dict(l=40, r=40, t=60, b=40)
+        )
+
+        return fig
 
 # example usage:
 if __name__ == "__main__":
