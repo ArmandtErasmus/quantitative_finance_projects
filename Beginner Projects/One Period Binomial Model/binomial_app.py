@@ -1,4 +1,5 @@
 import streamlit as st
+import matplotlib
 import matplotlib.pyplot as plt
 import numpy as np
 from one_period_binomial_model import OnePeriodBinomialPricer, BinomialVisualizer
