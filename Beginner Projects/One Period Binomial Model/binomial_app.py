@@ -1,5 +1,6 @@
 import streamlit as st
 import matplotlib
+matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import numpy as np
 from one_period_binomial_model import OnePeriodBinomialPricer, BinomialVisualizer
