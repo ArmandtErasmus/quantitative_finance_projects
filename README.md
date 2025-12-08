@@ -6,7 +6,7 @@ This repository is designed to help students, quants, actuaries, and finance ent
 
 # 📌 What You’ll Find Here
 - 🧮 Derivative Pricing Models
-Binomial trees, Black-Scholes, Monte Carlo simulation, Greeks, implied volatility.
+Binomial trees, Black-Scholes, Monte Carlo simulation, Greeks, implied volatility, OIS Curves.
 
 - 📈 Portfolio Theory & Risk Management
 Mean-variance optimisation, efficient frontier, risk-parity, backtesting, VaR/ES.
